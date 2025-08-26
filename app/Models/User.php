@@ -49,4 +49,7 @@ class User extends Authenticatable
     public function address(){
         return $this->hasOne(Address::class);
     }
+    public function posts(){
+        return $this->hasMany(Post::class);
+    }
 }
