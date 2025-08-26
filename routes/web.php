@@ -4,6 +4,10 @@ use Illuminate\Support\Facades\Route;
 use App\Models\User;
 use App\Models\Address;
 use App\Models\Post;
+use App\Models\Role;
+use App\Models\Staff;
+use App\Models\Product;
+use App\Models\Photo;
 
 Route::get('/', function () {
     return view('welcome');
@@ -158,9 +162,115 @@ Route::get('/', function () {
                     
                 });
 
-                
 
-        //? Many To Many Realtionship
+
+        //? Many To Many Relationship
 
 
             //* -- CREATE DATA (MANY-TO-MANY)
+
+            Route::get('manytomany/create/{id}',function($id){
+                $user = User::find($id);
+                $role = new Role(['name'=>'Author']);
+                $user->roles()->save($role);
+            });
+
+            //* -- READ DATA (MANY-TO-MANY)
+
+            Route::get('manytomany/read/{id}/{role_id}',function($id,$role_id){
+                $user = User::find($id);
+
+                ///Return only first data
+                // echo $user->roles()->first()->id.' = '.$user->roles()->first()->name;
+
+
+                ///Return all data linked to users table id
+                foreach( $user->roles as $post){
+                    echo $post->id->first().' = '.$post->name.'<br>';
+                }
+
+                ///Return Specific data linked to users table id
+                // echo '<pre>';
+                // echo $user->roles()->where('role_id',$role_id)->first();
+            });
+
+
+            //* -- UPDATE DATA (MANY-TO-MANY)
+
+            Route::get('manytomany/update/{id}/{role_id}/{role_value}',function($id,$role_id,$role_value){
+                $user = User::findOrFail($id);
+                if($user->roles()->where('role_id',$role_id)->update(['name'=>$role_value])){
+                    return 'Updated';
+                }
+                else{
+                    return 'enter real values';
+                }
+            });
+
+
+            //* -- DELETE  DATA (MANY-TO-MANY)
+
+            Route::get('manytomany/delete/{id}',function($id){
+
+                /// DELETE ALL
+                 $user = User::findOrFail($id);
+                 //$user->roles()->delete();
+
+                ///DELETE SPECIFIC
+                $user->roles()->where('role_id',4)->delete();
+
+            });
+
+
+            //* ATTACH DATA (MANY-TO-MANY)
+
+            Route::get('manytomany/attach/{id}/{role_attach_id}',function($id,$role_attach_id){
+                 
+                $user = User::findOrFail($id);
+                $user->roles()->attach($role_attach_id);
+            });
+
+
+            //* DETACH DATA (MANY-TO-MANY)
+
+            Route::get('manytomany/detach/{id}/{role_detach_id}',function($id,$role_detach_id){
+                 
+                $user = User::findOrFail($id);
+                $user->roles()->detach($role_detach_id);
+            });
+
+
+            //* SYNC DATA (MANY-TO-MANY)
+
+            Route::get('manytomany/sync',function(){
+                 
+                $user = User::findOrFail(1);
+                $user->roles()->sync([5,6,7]);
+            });
+
+
+
+        //? Polymorphic Relationship
+
+            //* -- CREATE DATA (Polymorphic)
+
+            Route::get('polymorphic/create/{id}/{path}',function($id,$path){
+                $staff = Staff::findOrFail($id);
+                $staff->photos()->create(['path'=>$path]);
+
+            });
+
+
+            //* -- READ DATA (Polymorphic)
+
+            Route::get('polymorphic/read/{id}',function($id){
+                $staff = Staff::findOrFail($id);
+                //? return $staff->photos;
+
+                /// OR 
+
+                foreach($staff->photos as $photo){
+                    echo $photo->path.' <br>';
+                }
+
+            });
