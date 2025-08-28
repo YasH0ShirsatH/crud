@@ -1,4 +1,16 @@
 <?php
+/*
+--------------------------------------------------------------------------
+//* CRUD & Eloquent Relationship Routes
+//* --------------------------------------------------------------------------
+//*  This file contains route definitions for demonstrating CRUD operations
+//*  and various Eloquent relationships in Laravel, including://* | - Basic CRUD for User model
+//*  - One-to-One, One-to-Many, Many-to-Many, and Polymorphic relationships
+//*  Each section provides examples for creating, reading, updating, and deleting
+//*  related data using Eloquent ORM
+--------------------------------------------------------------------------
+
+*/
 
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
@@ -254,8 +266,13 @@ Route::get('/', function () {
 
             //* -- CREATE DATA (Polymorphic)
 
-            Route::get('polymorphic/create/{id}/{path}',function($id,$path){
+            Route::get('polymorphic/createstaff/{id}/{path}',function($id,$path){
                 $staff = Staff::findOrFail($id);
+                $staff->photos()->create(['path'=>$path]);
+
+            });
+            Route::get('polymorphic/createprod/{id}/{path}',function($id,$path){
+                $staff = Product::findOrFail($id);
                 $staff->photos()->create(['path'=>$path]);
 
             });
@@ -263,7 +280,7 @@ Route::get('/', function () {
 
             //* -- READ DATA (Polymorphic)
 
-            Route::get('polymorphic/read/{id}',function($id){
+            Route::get('polymorphic/readstaff/{id}',function($id){
                 $staff = Staff::findOrFail($id);
                 //? return $staff->photos;
 
@@ -274,3 +291,39 @@ Route::get('/', function () {
                 }
 
             });
+
+            Route::get('polymorphic/readprod/{id}',function($id){
+                $staff = Product::findOrFail($id);
+                //? return $staff->photos;
+
+                /// OR 
+
+                foreach($staff->photos as $photo){
+                    echo $photo->path.' <br>';
+                }
+
+            });
+
+
+             //* -- UPDATE DATA (Polymorphic)
+
+             Route::get('polymorphic/update/{id}/{image_id}',function($id,$image_id){
+                    $user = Staff::findOrFail($id);
+                    $update = $user->photos()->where('id',$image_id)->first()->update(['path'=>'new example']);
+                    
+             });
+
+                    /// SAME METHOD TO UPDATE WITH PRODUCTS TABLE AS ABOVE
+
+
+
+             //* -- DELETE DATA (Polymorphic)
+
+             Route::get('polymorphic/delete/{id}/{dlt_id}',function($id,$dlt_id){
+                $user = Staff::findOrFail($id);
+                $delete = $user->photos()->where('id',$dlt_id)->delete();
+             });
+                   /// SAME METHID TO DELETE LIKE ABOVE
+
+
+
