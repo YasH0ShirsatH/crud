@@ -26,7 +26,7 @@ Route::get('/', function () {
 });
 
 
-/// first create a unction to insert into user
+/// first create a function to insert into user
 
     Route::get('/insert', function () {
         $user  = new User([
